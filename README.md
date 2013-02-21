@@ -36,7 +36,7 @@ You can handle errors by catching the defined Exception classes.
 	}
 	catch (PostcodeNl_Api_RestClient_AuthenticationException $e)
 	{
-		die('The Postcode.nl API service doesn't know who we are: '. $e);
+		die('The Postcode.nl API service does not know who we are: '. $e);
 	}
 	catch (PostcodeNl_Api_RestClient_ServiceException $e)
 	{
