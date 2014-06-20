@@ -1,0 +1,30 @@
+{
+    "name": "postcode-nl/api-restclient",
+    "description": "A class which offers methods to directly talk with the Postcode.nl API through the REST endpoint offered. You will need to create an account with the https://api.postcode.nl service.",
+    "keywords": ["postcode", "netherlands", "api", "rest", "client"],
+    "license": "BSD-2-Clause",
+    "authors": [{"name": "Daan Broekhof", "role": "Developer"}],
+    "homepage": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient",
+    "support": {
+        "email": "tech@postcode.nl",
+        "issues": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient/issues"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "": "library/"
+        },
+        "classmap": [
+            "library/PostcodeNl/Api/RestClient.php"
+        ]
+    },
+    "require": {
+        "php": "~5.2",
+        "ext-curl": "*"
+    }
+}

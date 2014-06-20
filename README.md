@@ -9,6 +9,13 @@ License
 
 The code is available under the open source Simplified BSD license. (see LICENSE.txt)
 
+Installation
+=============
+
+The best way to install is by using [PHP Composer](https://getcomposer.org/), get package [`postcode-nl/api-restclient`](https://packagist.org/packages/postcode-nl/api-restclient) and stay up to date easily.
+
+Or download the source from our GitHub page: https://github.com/postcode-nl/PostcodeNl_Api_RestClient
+
 Usage
 =============
 
