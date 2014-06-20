@@ -38,7 +38,7 @@ class PostcodeNl_Api_RestClient_AuthenticationException extends PostcodeNl_Api_R
 class PostcodeNl_Api_RestClient
 {
 	/** (string) Version of the client */
-	const VERSION = '1.0.0.0';
+	const VERSION = '1.0.1.0';
 	/** (int) Maximum number of seconds allowed to set up the connection. */
 	const CONNECTTIMEOUT = 3;
 	/** (int) Maximum number of seconds allowed to receive the response. */
