@@ -1,13 +1,14 @@
 {
     "name": "postcode-nl/api-restclient",
-    "description": "A class which offers methods to directly talk with the Postcode.nl API through the REST endpoint offered. You will need to create an account with the https://api.postcode.nl service.",
-    "keywords": ["postcode", "netherlands", "api", "rest", "client"],
+    "description": "A client to the Postcode.nl API using the REST endpoint. Implements both the Address (Dutch address verification) and Signal (fraud warnings & data enrichment) API services. You will need to create an account at https://api.postcode.nl.",
+    "keywords": ["postcode", "netherlands", "api", "rest", "client", "magento", "fraud", "address"],
     "license": "BSD-2-Clause",
     "authors": [{"name": "Daan Broekhof", "role": "Developer"}],
-    "homepage": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient",
+    "homepage": "https://api.postcode.nl",
     "support": {
         "email": "tech@postcode.nl",
-        "issues": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient/issues"
+        "issues": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient/issues",
+        "support": "https://github.com/postcode-nl/PostcodeNl_Api_RestClient"
     },
     "repositories": [
         {
