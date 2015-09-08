@@ -30,7 +30,7 @@ You can handle errors by catching the defined Exception classes.
 
 ```PHP
 <?php
-	require_once('/PATH/TO/library/PostcodeNl/Api/RestClient.php';
+	require_once '/PATH/TO/library/PostcodeNl/Api/RestClient.php';
 	$client = new PostcodeNl_Api_RestClient('{your key}', '{your secret}');
 
 	// Look up the address for Dutch postcode 2012ES, housenumber 30,
