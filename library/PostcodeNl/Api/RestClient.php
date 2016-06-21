@@ -390,7 +390,8 @@ class PostcodeNl_Api_RestClient
 
 	/**
 		Validate a postcode string for correct format.
-		(is 1234AB, or 1234ab - no space in between!)
+		Is 1234AB, or 1234ab - no space in between.
+		Cannot start with a zero.
 
 	 	Parameters:
 	 		postcode - (string) Postcode input
@@ -400,7 +401,7 @@ class PostcodeNl_Api_RestClient
 	*/
 	public function isValidPostcodeFormat($postcode)
 	{
-		return (boolean)preg_match('~^[0-9]{4}[a-zA-Z]{2}$~', $postcode);
+		return (boolean)preg_match('~^[1-9][0-9]{3}[a-zA-Z]{2}$~', $postcode);
 	}
 
 	/**
