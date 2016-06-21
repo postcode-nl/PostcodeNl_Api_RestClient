@@ -11,7 +11,7 @@
 	obtain it through the world-wide-web, please send an email
 	to info@postcode.nl so we can send you a copy immediately.
 
-	Copyright (c) 2014 Postcode.nl B.V. (https://www.postcode.nl)
+	Copyright (c) 2016 Postcode.nl B.V. (https://services.postcode.nl)
 */
 
 /**
@@ -68,7 +68,7 @@ class PostcodeNl_Api_RestClient
 	/** (string) Default URL where the REST web service is located */
 	const DEFAULT_URL = 'https://api.postcode.nl/rest';
 	/** (string) Version of the client */
-	const VERSION = '1.1.1.0';
+	const VERSION = '1.1.2.0';
 	/** (int) Maximum number of seconds allowed to set up the connection. */
 	const CONNECTTIMEOUT = 3;
 	/** (int) Maximum number of seconds allowed to receive the response. */
@@ -105,7 +105,7 @@ class PostcodeNl_Api_RestClient
 			$this->_restApiUrl = $restApiUrl;
 
 		if (empty($this->_appKey) || empty($this->_appSecret))
-			throw new PostcodeNl_Api_RestClient_ClientException('No application key / secret configured, you can obtain these at https://api.postcode.nl.');
+			throw new PostcodeNl_Api_RestClient_ClientException('No application key / secret configured, you can obtain these at https://services.postcode.nl.');
 
 		if (!extension_loaded('curl'))
 			throw new PostcodeNl_Api_RestClient_ClientException('Cannot use Postcode.nl API client, the server needs to have the PHP `cURL` extension installed.');
@@ -349,28 +349,7 @@ class PostcodeNl_Api_RestClient
 	}
 
 	/**
-		Perform a Postcode.nl Signal check on the given transaction and/or customer information.
-
-		Parameters:
-			customer - (array) Data concerning a customer
-			access - (array) Data concerning how a customer is accessing a service
-			transaction - (array) Data concerning a transaction of a customer
-			config - (array) Configuration for the signal check
-
-		Returns:
-			(array) signals
-				checkId - (string) Identifier of the check (22 characters)
-				signals - (array) All signals, each signal is an array, containing:
-					concerning - (string) Field this signal is about
-					type - (string) Name of signal type, including vendor, service name and response type
-					warning - (boolean) If this signal is significant.
-					message - (string) Human readable explanation for the signal
-					data - (array|null) Optional data of the signal. See documentation on website for data definitions of the specific signal types.
-				warningCount - (int) Number of warnings found in signals
-				reportPdfUrl - (string) URL to a report of the signal check
-
-		Reference:
-			<https://api.postcode.nl/documentation>
+		Deprecated, will be removed in the future. Please use lookupAddress instead.
 	*/
 	public function doSignalCheck(array $customer = null, array $access = null, array $transaction = null, array $config = null)
 	{

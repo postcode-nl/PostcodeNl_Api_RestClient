@@ -24,18 +24,24 @@
 	<form method="POST">
 		<fieldset>
 			<legend>Authentication</legend>
-			API url:<br />
-			<input type="text" name="apiUrl" value="<?php echo isset($_POST['apiUrl']) ? htmlspecialchars($_POST['apiUrl']) : PostcodeNl_Api_RestClient::DEFAULT_URL; ?>" size="60"><br />
-			API key:<br />
-			<input type="text" name="key" value="<?php echo isset($_POST['key']) ? htmlspecialchars($_POST['key']) : ''; ?>" size="60"><br />
-			API secret:<br />
-			<input type="text" name="secret" value="<?php echo isset($_POST['secret']) ? htmlspecialchars($_POST['secret']) : ''; ?>" size="60"><br />
+			<label>
+				API url:<br />
+				<input type="text" name="apiUrl" value="<?php echo isset($_POST['apiUrl']) ? htmlspecialchars($_POST['apiUrl']) : PostcodeNl_Api_RestClient::DEFAULT_URL; ?>" size="60">
+			</label><br />
+			<label>
+				API key:<br />
+				<input type="text" name="key" value="<?php echo isset($_POST['key']) ? htmlspecialchars($_POST['key']) : ''; ?>" size="60">
+			</label><br />
+			<label>
+				API secret:<br />
+				<input type="text" name="secret" value="<?php echo isset($_POST['secret']) ? htmlspecialchars($_POST['secret']) : ''; ?>" size="60">
+			</label><br />
 		</fieldset>
 		<br />
 		<b>Select service:</b><br />
 		<select name="service">
-			<option value="Address" <?php echo isset($_POST['service']) && $_POST['service'] == 'Address' ? 'selected' : '' ?>>Postcode.nl Address API: Address lookup</option>
-			<option value="Signal" <?php echo isset($_POST['service']) && $_POST['service'] == 'Signal' ? 'selected' : '' ?>>Postcode.nl Signal API: Check</option>
+			<option value="Address" <?php echo !isset($_POST['service']) || $_POST['service'] == 'Address' ? 'selected' : '' ?>>Postcode.nl Address API: Address lookup</option>
+			<option value="Signal" <?php echo isset($_POST['service']) && $_POST['service'] == 'Signal' ? 'selected' : '' ?>>Postcode.nl Signal API: Check (deprecated)</option>
 		</select> <input type="submit" value="Select"><br />
 		<br />
 		<?php if (isset($_POST['service']) && $_POST['service'] == "Address") {?>
