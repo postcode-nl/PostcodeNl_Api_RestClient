@@ -317,9 +317,9 @@
 	</p>
 	<h3>Existing postcode, with only one possible housenumber addition</h3>
 	<p>
-		Postcode: `2011DW`<br />
-		Housenumber: `8`<br />
-		Housenumber addition: `RD`<br />
+		Postcode: `1011AE`<br />
+		Housenumber: `36`<br />
+		Housenumber addition: `B`<br />
 	</p>
 	<h3>Existing postcode, with multiple housenumber additions, incorrect addition</h3>
 	<p>
