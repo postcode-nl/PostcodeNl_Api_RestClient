@@ -11,7 +11,7 @@
 	obtain it through the world-wide-web, please send an email
 	to info@postcode.nl so we can send you a copy immediately.
 
-	Copyright (c) 2016 Postcode.nl B.V. (https://services.postcode.nl)
+	Copyright (c) 2017 Postcode.nl B.V. (https://services.postcode.nl)
 */
 
 /**
@@ -68,7 +68,7 @@ class PostcodeNl_Api_RestClient
 	/** (string) Default URL where the REST web service is located */
 	const DEFAULT_URL = 'https://api.postcode.nl/rest';
 	/** (string) Version of the client */
-	const VERSION = '1.1.2.0';
+	const VERSION = '1.1.3.0';
 	/** (int) Maximum number of seconds allowed to set up the connection. */
 	const CONNECTTIMEOUT = 3;
 	/** (int) Maximum number of seconds allowed to receive the response. */
@@ -157,7 +157,7 @@ class PostcodeNl_Api_RestClient
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::CONNECTTIMEOUT);
 		// Maximum number of seconds allowed to receive the response.
 		curl_setopt($ch, CURLOPT_TIMEOUT, self::TIMEOUT);
-		// How do we authenticate ourselves? Using HTTP BASIC authentication (http://en.wikipedia.org/wiki/Basic_access_authentication)
+		// How do we authenticate ourselves? Using HTTP BASIC authentication (https://en.wikipedia.org/wiki/Basic_access_authentication)
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		// Set our key as 'username' and our secret as 'password'
 		curl_setopt($ch, CURLOPT_USERPWD, $this->_appKey .':'. $this->_appSecret);
@@ -222,7 +222,7 @@ class PostcodeNl_Api_RestClient
 	}
 
 	/**
-		Check the JSON response of the Address or Signal API result data.
+		Check the JSON response of the Address API result data.
 		Will throw an exception if there is an exception or other not expected response.
 
 		Parameters:
@@ -272,10 +272,8 @@ class PostcodeNl_Api_RestClient
 		{
 			throw new PostcodeNl_Api_RestClient_InputInvalidException($response['data']['exception'], $response['data']['exceptionId']);
 		}
-		else
-		{
-			throw new PostcodeNl_Api_RestClient_ServiceException($response['data']['exception'], $response['data']['exceptionId']);
-		}
+
+		throw new PostcodeNl_Api_RestClient_ServiceException($response['data']['exception'], $response['data']['exceptionId']);
 	}
 
 	/**
@@ -345,25 +343,6 @@ class PostcodeNl_Api_RestClient
 		}
 
 		// Successful response!
-		return $response['data'];
-	}
-
-	/**
-		Deprecated, will be removed in the future. Please use lookupAddress instead.
-	*/
-	public function doSignalCheck(array $customer = null, array $access = null, array $transaction = null, array $config = null)
-	{
-		$url = $this->_restApiUrl .'/signal/check';
-
-		$response = $this->_doRestCall('POST', $url, array(
-			'customer' => $customer,
-			'access' => $access,
-			'transaction' => $transaction,
-			'config' => $config,
-		));
-
-		$this->_checkResponse($response);
-
 		return $response['data'];
 	}
 
