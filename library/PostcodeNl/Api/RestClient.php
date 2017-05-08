@@ -1,26 +1,34 @@
 <?php
 /**
-	PostcodeNl
-
-	LICENSE:
-	This source file is subject to the Simplified BSD license that is
-	bundled	with this package in the file LICENSE.txt.
-	It is also available through the world-wide-web at this URL:
-	https://api.postcode.nl/license/simplified-bsd
-	If you did not receive a copy of the license and are unable to
-	obtain it through the world-wide-web, please send an email
-	to info@postcode.nl so we can send you a copy immediately.
-
-	Copyright (c) 2017 Postcode.nl B.V. (https://services.postcode.nl)
-*/
+ * PostcodeNl
+ *
+ * LICENSE:
+ * This source file is subject to the Simplified BSD license that is
+ * bundled * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://api.postcode.nl/license/simplified-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@postcode.nl so we can send you a copy immediately.
+ *
+ * Copyright (c) 2017 Postcode.nl B.V. (https://services.postcode.nl)
+ */
 
 /**
-	Base superclass for Exceptions raised by this class, also exposes any 'exceptionId' received from the service.
-*/
+ * Base superclass for Exceptions raised by this class, also exposes any 'exceptionId' received from the service.
+ */
 class PostcodeNl_Api_RestClient_Exception extends Exception
 {
 	protected $_exceptionId = null;
 
+	/**
+	 * PostcodeNl_Api_RestClient_Exception constructor.
+	 *
+	 * @param null $message
+	 * @param null $exceptionId
+	 * @param int $code
+	 * @param Exception|null $previous
+	 */
 	public function __construct($message = null, $exceptionId = null, $code = 0, Exception $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
@@ -34,68 +42,70 @@ class PostcodeNl_Api_RestClient_Exception extends Exception
 }
 
 /**
-	Exception raised when user input is invalid.
-*/
+ * Exception raised when user input is invalid.
+ */
 class PostcodeNl_Api_RestClient_InputInvalidException extends PostcodeNl_Api_RestClient_Exception {}
 
 /**
-	Exception raised when address input contains no formatting errors, but no address could be found.
-*/
+ * Exception raised when address input contains no formatting errors, but no address could be found.
+ */
 class PostcodeNl_Api_RestClient_AddressNotFoundException extends PostcodeNl_Api_RestClient_Exception {}
 
 /**
-	Exception raised when an unexpected error occurred in this client.
-*/
+ * Exception raised when an unexpected error occurred in this client.
+ */
 class PostcodeNl_Api_RestClient_ClientException extends PostcodeNl_Api_RestClient_Exception {}
 
-/** Exception raised when an unexpected error occurred on the remote service. */
+/**
+ * Exception raised when an unexpected error occurred on the remote service.
+ */
 class PostcodeNl_Api_RestClient_ServiceException extends PostcodeNl_Api_RestClient_Exception {}
 
 /**
-	Exception raised when there is a authentication problem.
-	In a production environment, you probably always want to catch, log and hide these exceptions.
-*/
+ * Exception raised when there is a authentication problem.
+ * In a production environment, you probably always want to catch, log and hide these exceptions.
+ */
 class PostcodeNl_Api_RestClient_AuthenticationException extends PostcodeNl_Api_RestClient_Exception {}
 
 /**
-	Class to connect to the Postcode.nl API web services via the REST endpoint.
-
-	References:
-		<https://api.postcode.nl/>
-*/
+ * Class to connect to the Postcode.nl API web services via the REST endpoint.
+ *
+ * @see https://api.postcode.nl/
+ */
 class PostcodeNl_Api_RestClient
 {
-	/** (string) Default URL where the REST web service is located */
+	/** @var string Default URL where the REST web service is located */
 	const DEFAULT_URL = 'https://api.postcode.nl/rest';
-	/** (string) Version of the client */
-	const VERSION = '1.1.3.0';
-	/** (int) Maximum number of seconds allowed to set up the connection. */
+	/** @var string Version of the client */
+	const VERSION = '1.1.4.0';
+	/** @var int Maximum number of seconds allowed to set up the connection. */
 	const CONNECTTIMEOUT = 3;
-	/** (int) Maximum number of seconds allowed to receive the response. */
+	/** @var int Maximum number of seconds allowed to receive the response. */
 	const TIMEOUT = 10;
 
-	/** (string) URL where the REST web service is located */
+	/** @var string URL where the REST web service is located */
 	protected $_restApiUrl = self::DEFAULT_URL;
-	/** (string) Internal storage of the application key of the authentication. */
+	/** @var string Internal storage of the application key of the authentication. */
 	protected $_appKey = '';
-	/** (string) Internal storage of the application secret of the authentication. */
+	/** @var string Internal storage of the application secret of the authentication. */
 	protected $_appSecret = '';
 
-	/** (boolean) If debug data is stored. */
+	/** @var boolean If debug data is stored. */
 	protected $_debugEnabled = false;
-	/** (mixed) Debug data storage. */
+	/** @var array|null Debug data storage. */
 	protected $_debugData = null;
-	/** (array) Last JSON response */
-	protected $_lastResponseData = null;
+	/** @var array|null Last response */
+	protected $_lastResponseData;
+
 
 	/**
-		Construct the client.
-
-		Parameters:
-			appKey - (string) Application Key as generated by Postcode.nl
-			appSecret - (string) Application Secret as generated by Postcode.nl
-			restApiUrl - (string) Service URL to call. Will default to self::DEFAULT_URL
-	*/
+	 * PostcodeNl_Api_RestClient constructor.
+	 *
+	 * @param string $appKey Application Key as provided by Postcode.nl
+	 * @param string $appSecret string Application Secret as provided by Postcode.nl
+	 * @param string|null $restApiUrl Service URL to call. Will default to self::DEFAULT_URL
+	 * @throws PostcodeNl_Api_RestClient_ClientException
+	 */
 	public function __construct($appKey, $appSecret, $restApiUrl = null)
 	{
 		$this->_appKey = $appKey;
@@ -116,12 +126,12 @@ class PostcodeNl_Api_RestClient
 			throw new PostcodeNl_Api_RestClient_ClientException('Cannot use Postcode.nl API client, the server cannot connect to HTTPS urls. (`cURL` extension needs support for SSL)');
 	}
 
-	/**
-		Toggle debug option.
 
-		Parameters:
-			debugEnabled - (boolean) what to set the option to
-	*/
+	/**
+	 * Toggle debug option.
+	 *
+	 * @param bool $debugEnabled
+	 */
 	public function setDebugEnabled($debugEnabled = true)
 	{
 		$this->_debugEnabled = (boolean)$debugEnabled;
@@ -129,21 +139,28 @@ class PostcodeNl_Api_RestClient
 			$this->_debugData = null;
 	}
 
-	/**
-		Get the debug data gathered so far.
 
-		Returns:
-			(mixed) Debug data
-	*/
+	/**
+	 * Get the debug data gathered so far.
+	 *
+	 * @return array|null
+	 */
 	public function getDebugData()
 	{
 		return $this->_debugData;
 	}
 
+
 	/**
-		Perform a REST call to the Postcode.nl API
-	*/
-	protected function _doRestCall($method, $url, array $data = array())
+	 * Perform a REST call to the Postcode.nl API
+	 *
+	 * @param string $method Http method
+	 * @param string $url
+	 * @param array $data
+	 * @return array
+	 * @throws PostcodeNl_Api_RestClient_ClientException
+	 */
+	protected function _doRestCall($method, $url, array $data = [])
 	{
 		// Connect using cURL
 		$ch = curl_init();
@@ -214,20 +231,24 @@ class PostcodeNl_Api_RestClient
 
 		$this->_lastResponseData = $jsonResponse;
 
-		return array(
+		return [
 			'statusCode' => $responseStatusCode,
 			'statusCodeClass' => $responseStatusCodeClass,
 			'data' => $jsonResponse,
-		);
+		];
 	}
 
-	/**
-		Check the JSON response of the Address API result data.
-		Will throw an exception if there is an exception or other not expected response.
 
-		Parameters:
-			response - (array) response data received from the service in _doRestCall()
-	*/
+	/**
+	 * Check the JSON response of the Address API result data.
+	 * Will throw an exception if there is an exception or other not expected response.
+	 *
+	 * @param array $response Response data
+	 * @throws PostcodeNl_Api_RestClient_AddressNotFoundException
+	 * @throws PostcodeNl_Api_RestClient_AuthenticationException
+	 * @throws PostcodeNl_Api_RestClient_InputInvalidException
+	 * @throws PostcodeNl_Api_RestClient_ServiceException
+	 */
 	protected function _checkResponse(array $response)
 	{
 		// Data present and status code class is 200-299: all is ok
@@ -240,26 +261,25 @@ class PostcodeNl_Api_RestClient
 		{
 			if ($response['statusCode'] == 503)
 			{
-				throw new PostcodeNl_Api_RestClient_ServiceException('Postcode.nl API returned no valid JSON data. HTTP status code `'. $response['statusCode'] .'`: Service Unavailable. You might be rate-limited if are sending too many requests.');
+				throw new PostcodeNl_Api_RestClient_ServiceException('Postcode.nl API returned no valid JSON data. HTTP status code `'. $response['statusCode'] .'`: Service Unavailable. You might be rate-limited if you are sending too many requests.');
 			}
-			else
-			{
-				throw new PostcodeNl_Api_RestClient_ServiceException('Postcode.nl API returned no valid JSON data. HTTP status code `'. $response['statusCode'] .'`.');
-			}
+
+			throw new PostcodeNl_Api_RestClient_ServiceException('Postcode.nl API returned no valid JSON data. HTTP status code `'. $response['statusCode'] .'`.');
 		}
 
 		// Some specific exceptionIds we clarify within the context of our client.
 		if ($response['statusCode'] == 401)
 		{
-			if ($response['data']['exceptionId'] == 'PostcodeNl_Controller_Plugin_HttpBasicAuthentication_PasswordNotCorrectException')
+			if ($response['data']['exceptionId'] === 'PostcodeNl_Controller_Plugin_HttpBasicAuthentication_PasswordNotCorrectException')
 				throw new PostcodeNl_Api_RestClient_AuthenticationException('`Secret` specified in HTTP authentication password is incorrect. ("'. $response['data']['exception'] .'")', $response['data']['exceptionId']);
-			if ($response['data']['exceptionId'] == 'PostcodeNl_Controller_Plugin_HttpBasicAuthentication_NotAuthorizedException')
+			if ($response['data']['exceptionId'] === 'PostcodeNl_Controller_Plugin_HttpBasicAuthentication_NotAuthorizedException')
 				throw new PostcodeNl_Api_RestClient_AuthenticationException('`Key` specified in HTTP authentication is incorrect. ("'. $response['data']['exception'] .'")', $response['data']['exceptionId']);
 		}
+
 		// Specific exception for the Address API when input is correct, but no address is found
 		if ($response['statusCode'] == 404)
 		{
-			if ($response['data']['exceptionId'] == 'PostcodeNl_Service_PostcodeAddress_AddressNotFoundException')
+			if ($response['data']['exceptionId'] === 'PostcodeNl_Service_PostcodeAddress_AddressNotFoundException')
 				throw new PostcodeNl_Api_RestClient_AddressNotFoundException($response['data']['exception'], $response['data']['exceptionId']);
 		}
 
@@ -276,38 +296,36 @@ class PostcodeNl_Api_RestClient
 		throw new PostcodeNl_Api_RestClient_ServiceException($response['data']['exception'], $response['data']['exceptionId']);
 	}
 
+
 	/**
-		Look up an address by postcode and house number.
-
-		Parameters:
-			postcode - (string) Dutch postcode in the '1234AB' format
-			houseNumber - (string) House number (may contain house number addition, will be separated automatically)
-			houseNumberAddition - (string) House number addition
-			validateHouseNumberAddition - (boolean) Strictly validate the addition
-
-		Returns:
-			(array) The address found
-				street - (string) Official name of the street.
-				houseNumber - (int) House number
-				houseNumberAddition - (string|null) House number addition if given and validated, null if addition is not valid / not found
-				postcode - (string) Postcode
-				city - (string) Official city name
-				municipality - (string) Official municipality name
-				province - (string) Official province name
-				rdX - (int) X coordinate of the Dutch Rijksdriehoeksmeting
-				rdY - (int) Y coordinate of the Dutch Rijksdriehoeksmeting
-				latitude - (float) Latitude of the address (front door of the premise)
-				longitude - (float) Longitude of the address
-				bagNumberDesignationId - (string) Official Dutch BAG id
-				bagAddressableObjectId - (string) Official Dutch BAG Address Object id
-				addressType - (string) Type of address, see reference link
-				purposes - (array) Array of strings, each indicating an official Dutch 'usage' category, see reference link
-				surfaceArea - (int) Surface area of object in square meters (all floors)
-				houseNumberAdditions - (array) All housenumber additions which are known for the housenumber given.
-
-		Reference:
-			<https://api.postcode.nl/documentation>
-	*/
+	 * Look up an address by postcode and house number.
+	 *
+	 * @param string $postcode Dutch postcode in the '1234AB' format
+	 * @param int|string $houseNumber House number (may contain house number addition, will be separated automatically)
+	 * @param string $houseNumberAddition House number addition
+	 * @param bool $validateHouseNumberAddition Enable to validate the addition
+	 * @return array
+	 * @throws PostcodeNl_Api_RestClient_InputInvalidException
+	 *
+	 * @see https://api.postcode.nl/documentation
+	 * street - (string) Official name of the street.
+	 * houseNumber - (int) House number
+	 * houseNumberAddition - (string|null) House number addition if given and validated, null if addition is not valid / not found
+	 * postcode - (string) Postcode
+	 * city - (string) Official city name
+	 * municipality - (string) Official municipality name
+	 * province - (string) Official province name
+	 * rdX - (int) X coordinate of the Dutch Rijksdriehoeksmeting
+	 * rdY - (int) Y coordinate of the Dutch Rijksdriehoeksmeting
+	 * latitude - (float) Latitude of the address (front door of the premise)
+	 * longitude - (float) Longitude of the address
+	 * bagNumberDesignationId - (string) Official Dutch BAG id
+	 * bagAddressableObjectId - (string) Official Dutch BAG Address Object id
+	 * addressType - (string) Type of address, see reference link
+	 * purposes - (array) Array of strings, each indicating an official Dutch 'usage' category, see reference link
+	 * surfaceArea - (int) Surface area of object in square meters (all floors)
+	 * houseNumberAdditions - (array) All housenumber additions which are known for the housenumber given.
+	 */
 	public function lookupAddress($postcode, $houseNumber, $houseNumberAddition = '', $validateHouseNumberAddition = false)
 	{
 		// Remove spaces in postcode ('1234 AB' should be '1234AB')
@@ -346,33 +364,28 @@ class PostcodeNl_Api_RestClient
 		return $response['data'];
 	}
 
+
 	/**
-		Validate a postcode string for correct format.
-		Is 1234AB, or 1234ab - no space in between.
-		Cannot start with a zero.
-
-	 	Parameters:
-	 		postcode - (string) Postcode input
-
-		Returns
-	 		(boolean) if the postcode format is correct
-	*/
+	 * Validate if string has a correct Dutch postcode format.
+	 * Syntax: 1234AB, or 1234ab - no space in between. First digit cannot be a zero.
+	 *
+	 * @param string $postcode
+	 * @return bool
+	 */
 	public function isValidPostcodeFormat($postcode)
 	{
 		return (boolean)preg_match('~^[1-9][0-9]{3}[a-zA-Z]{2}$~', $postcode);
 	}
 
 	/**
-		Split a housenumber addition from a housenumber.
-		Examples: "123 2", "123 rood", "123a", "123a4", "123-a", "123 II"
-		(the official notation is to separate the housenumber and addition with a single space)
-
-		Parameters:
-			houseNumber - (string) Housenumber input
-
-		Returns
-			(array) split 'houseNumber' and 'houseNumberAddition'
-	*/
+	 * Split a housenumber addition from a housenumber.
+	 *
+	 * Examples: "123 2", "123 rood", "123a", "123a4", "123-a", "123 II"
+	 * (the official notation is to separate the housenumber and addition with a single space)
+	 *
+	 * @param string $houseNumber
+	 * @return array Array with houseNumber and houseNumberAddition values
+	 */
 	public function splitHouseNumber($houseNumber)
 	{
 		$houseNumberAddition = '';
@@ -382,15 +395,14 @@ class PostcodeNl_Api_RestClient
 			$houseNumberAddition = isset($match['addition2']) ? $match['addition2'] : (isset($match['addition1']) ? $match['addition1'] : '');
 		}
 
-		return array($houseNumber, $houseNumberAddition);
+		return [$houseNumber, $houseNumberAddition];
 	}
 
 	/**
-		Return the last decoded JSON response received, can be used to get more information from exceptions, or debugging.
-
-		Returns:
-			(string|null) JSON response received
-	*/
+	 * Return the last decoded JSON response received, can be used to get more information from exceptions, or debugging.
+	 *
+	 * @return array|null
+	 */
 	public function getLastResponseData()
 	{
 		return $this->_lastResponseData;
