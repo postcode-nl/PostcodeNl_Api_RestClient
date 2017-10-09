@@ -1,7 +1,7 @@
 Postcode.nl API REST Client
 =============
 
-A PHP 5.4+ class, which offers methods to directly talk with the [Postcode.nl API](https://api.postcode.nl/documentation) through the REST endpoint offered.
+A PHP 5.6+ class, which offers methods to directly talk with the [Postcode.nl API](https://api.postcode.nl/documentation) through the REST endpoint offered.
 You will need to create an account with the [Postcode.nl API](https://services.postcode.nl/adresdata/api) service.
 
 License

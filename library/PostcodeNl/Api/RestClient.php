@@ -77,7 +77,7 @@ class PostcodeNl_Api_RestClient
 	/** @var string Default URL where the REST web service is located */
 	const DEFAULT_URL = 'https://api.postcode.nl/rest';
 	/** @var string Version of the client */
-	const VERSION = '1.1.4.0';
+	const VERSION = '1.1.5.0';
 	/** @var int Maximum number of seconds allowed to set up the connection. */
 	const CONNECTTIMEOUT = 3;
 	/** @var int Maximum number of seconds allowed to receive the response. */
@@ -154,18 +154,17 @@ class PostcodeNl_Api_RestClient
 	/**
 	 * Perform a REST call to the Postcode.nl API
 	 *
-	 * @param string $method Http method
 	 * @param string $url
 	 * @param array $data
 	 * @return array
 	 * @throws PostcodeNl_Api_RestClient_ClientException
 	 */
-	protected function _doRestCall($method, $url, array $data = [])
+	protected function _doRestCall($url, array $data = [])
 	{
 		// Connect using cURL
 		$ch = curl_init();
-		// Set the HTTP request type, GET / POST most likely.
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+		// Set the HTTP request type
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 		// Set URL to connect to
 		curl_setopt($ch, CURLOPT_URL, $url);
 		// We want the response returned to us.
@@ -174,19 +173,13 @@ class PostcodeNl_Api_RestClient
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::CONNECTTIMEOUT);
 		// Maximum number of seconds allowed to receive the response.
 		curl_setopt($ch, CURLOPT_TIMEOUT, self::TIMEOUT);
-		// How do we authenticate ourselves? Using HTTP BASIC authentication (https://en.wikipedia.org/wiki/Basic_access_authentication)
-		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		// Set our key as 'username' and our secret as 'password'
-		curl_setopt($ch, CURLOPT_USERPWD, $this->_appKey .':'. $this->_appSecret);
-		// To be tidy, we identify ourselves with a User Agent. (not required)
-		curl_setopt($ch, CURLOPT_USERAGENT, 'PostcodeNl_Api_RestClient/' . self::VERSION .' PHP/'. phpversion());
 
-		// Add any data as JSON encoded information
-		if ($method != 'GET' && isset($data))
-		{
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		}
+		// The Postcode.nl API uses HTTP BASIC authentication (https://en.wikipedia.org/wiki/Basic_access_authentication)
+		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		// Use key as 'username' and secret as 'password'
+		curl_setopt($ch, CURLOPT_USERPWD, $this->_appKey .':'. $this->_appSecret);
+		// Identify this client with a User Agent
+		curl_setopt($ch, CURLOPT_USERAGENT, 'PostcodeNl_Api_RestClient/' . self::VERSION .' PHP/'. phpversion());
 
 		// Various debug options
 		if ($this->_debugEnabled)
@@ -207,10 +200,6 @@ class PostcodeNl_Api_RestClient
 		if ($this->_debugEnabled)
 		{
 			$this->_debugData['request'] = curl_getinfo($ch, CURLINFO_HEADER_OUT);
-
-			if ($method != 'GET' && isset($data))
-				$this->_debugData['request'] .= json_encode($data);
-
 			$this->_debugData['response'] = $response;
 
 			// Strip off header that was added for debug purposes.
@@ -308,23 +297,26 @@ class PostcodeNl_Api_RestClient
 	 * @throws PostcodeNl_Api_RestClient_InputInvalidException
 	 *
 	 * @see https://api.postcode.nl/documentation
-	 * street - (string) Official name of the street.
-	 * houseNumber - (int) House number
-	 * houseNumberAddition - (string|null) House number addition if given and validated, null if addition is not valid / not found
-	 * postcode - (string) Postcode
-	 * city - (string) Official city name
-	 * municipality - (string) Official municipality name
-	 * province - (string) Official province name
-	 * rdX - (int) X coordinate of the Dutch Rijksdriehoeksmeting
-	 * rdY - (int) Y coordinate of the Dutch Rijksdriehoeksmeting
-	 * latitude - (float) Latitude of the address (front door of the premise)
-	 * longitude - (float) Longitude of the address
-	 * bagNumberDesignationId - (string) Official Dutch BAG id
-	 * bagAddressableObjectId - (string) Official Dutch BAG Address Object id
+	 * street - (string) Street name in accordance with "BAG (Basisregistraties adressen en gebouwen)". In capital and lowercase letters, including punctuation marks and accents. This field is at most 80 characters in length. Filled with "Postbus" in case it is a range of PO boxes.
+	 * streetNen - (string) Street name in NEN-5825 notation, which has a lower maximum length. In capital and lowercase letters, including punctuation marks and accents. This field is at most 24 characters in length. Filled with "Postbus" in case it is a range of PO boxes.
+	 * houseNumber - (int) House number of a 'perceel'. In case of a Postbus match the house number will always be 0. Range: 0-99999
+	 * houseNumberAddition - (string|null) Addition of the house number to uniquely define a location. These additions are officially recognized by the municipality. Null if addition not found (see houseNumberAdditions result field).
+	 * postcode - (string) Four number neighborhood code (first part of a postcode). Range: 1000-9999 plus two character letter combination (second part of a postcode). Range: "AA"-"ZZ"
+	 * city - (string) Official city name in accordance with "BAG (Basisregistraties adressen en gebouwen)". In capital and lowercase letters, including punctuation marks and accents. This field is at most 80 characters in length.
+	 * cityShort - (string) City name, shortened to fit a lower maximum length. In capital and lowercase letters, including punctuation marks and accents. This field is at most 24 characters in length.
+	 * municipality - (string) Municipality name in accordance with "BAG (Basisregistraties adressen en gebouwen)". In capital and lowercase letters, including punctuation marks and accents. This field is at most 80 characters in length. Examples: "Baarle-Nassau", "'s-Gravenhage", "Haarlemmerliede en Spaarnwoude".
+	 * municipalityShort - (string) Municipality name, shortened to fit a lower maximum length. In capital and lowercase letters, including punctuation marks and accents. This field is at most 24 characters in length. Examples: "Baarle-Nassau", "'s-Gravenhage", "Haarlemmerliede c.a.".
+	 * province - (string) Official name of the province, correctly cased and with dashes where applicable.
+	 * rdX - (int) X coordinate according to Dutch Rijksdriehoeksmeting "(EPSG) 28992 Amersfoort / RD New". Values range from 0 to 300000 meters. Null for PO Boxes.
+	 * rdY - (int) Y coordinate according to Dutch Rijksdriehoeksmeting "(EPSG) 28992 Amersfoort / RD New". Values range from 300000 to 620000 meters. Null for PO Boxes.
+	 * latitude - (float) Latitude of address. Null for PO Boxes.
+	 * longitude - (float) Longitude of address. Null for PO Boxes.
+	 * bagNumberDesignationId - (string) Dutch term used in BAG: "nummeraanduiding id".
+	 * bagAddressableObjectId - (string) Dutch term used in BAG: "adresseerbaar object id". Unique identification for objects which have 'building', 'house boat site', or 'mobile home site' as addressType.
 	 * addressType - (string) Type of address, see reference link
 	 * purposes - (array) Array of strings, each indicating an official Dutch 'usage' category, see reference link
-	 * surfaceArea - (int) Surface area of object in square meters (all floors)
-	 * houseNumberAdditions - (array) All housenumber additions which are known for the housenumber given.
+	 * surfaceArea - (int) Surface area of object in square meters (all floors). Null for PO Boxes.
+	 * houseNumberAdditions - (array) List of all house number additions having the postcode and houseNumber which was input.
 	 */
 	public function lookupAddress($postcode, $houseNumber, $houseNumberAddition = '', $validateHouseNumberAddition = false)
 	{
@@ -347,9 +339,9 @@ class PostcodeNl_Api_RestClient
 			throw new PostcodeNl_Api_RestClient_InputInvalidException('House number `'. $houseNumber .'` must contain digits only.');
 
 		// Use the regular validation function
-		$url = $this->_restApiUrl .'/addresses/' . rawurlencode($postcode). '/'. rawurlencode($houseNumber) . '/'. rawurlencode($houseNumberAddition);
+		$url = $this->_restApiUrl .'/addresses/postcode/' . rawurlencode($postcode). '/'. rawurlencode($houseNumber) . '/'. rawurlencode($houseNumberAddition);
 
-		$response = $this->_doRestCall('GET', $url);
+		$response = $this->_doRestCall($url);
 
 		$this->_checkResponse($response);
 

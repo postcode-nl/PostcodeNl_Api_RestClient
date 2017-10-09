@@ -161,5 +161,11 @@
 		Housenumber: `1234`<br />
 		Housenumber addition: ``<br />
 	</p>
+	<h3>Result showing difference between street and streetNen</h3>
+	<p>
+		Postcode: `1011DG`<br />
+		Housenumber: `2`<br />
+		Housenumber addition: ``<br />
+	</p>
 	</body>
 </html>
