@@ -1,6 +1,7 @@
 {
+    "abandoned": "postcode-nl/api-client",
     "name": "postcode-nl/api-restclient",
-    "description": "A client to the Postcode.nl Address API for Dutch address verification. You will need to create an account at https://api.postcode.nl.",
+    "description": "Deprecated client to the Postcode.nl Address API for Dutch address verification.",
     "keywords": ["postcode", "netherlands", "api", "rest", "client", "magento", "address"],
     "license": "BSD-2-Clause",
     "authors": [{"name": "Maarten Scholder", "role": "Developer"}],
